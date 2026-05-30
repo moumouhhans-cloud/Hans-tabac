@@ -2,25 +2,35 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Boutique Hans Tabac</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hans Tabac - Boutique</title>
     <style>
-        body { background: #111214; color: #f0f0f0; font-family: sans-serif; text-align: center; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
-        .card { background: #1e2026; padding: 20px; border-radius: 15px; }
+        body { background-color: #111214; color: #ffffff; font-family: sans-serif; margin: 0; padding: 20px; }
+        h1 { text-align: center; color: #FF3B3B; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
+        .card { background-color: #1e2026; padding: 20px; border-radius: 15px; border: 1px solid #2a2d35; text-align: center; }
+        .price { color: #FF8C00; font-weight: bold; font-size: 1.2em; }
     </style>
 </head>
 <body>
-    <h1>Bienvenue chez Hans Tabac</h1>
+    <h1>Hans Tabac</h1>
     <div class="grid" id="boutique"></div>
+
     <script>
+        // On charge les produits depuis votre fichier produits.json
         fetch('produits.json')
-            .then(r => r.json())
+            .then(response => response.json())
             .then(data => {
-                const b = document.getElementById('boutique');
+                const container = document.getElementById('boutique');
                 data.forEach(p => {
-                    b.innerHTML += `<div class="card"><h3>${p.nom}</h3><p>${p.prix}</p></div>`;
+                    container.innerHTML += `
+                        <div class="card">
+                            <h3>${p.nom}</h3>
+                            <p class="price">${p.prix}</p>
+                        </div>`;
                 });
-            });
+            })
+            .catch(err => console.log('Erreur de chargement des produits', err));
     </script>
 </body>
 </html>
