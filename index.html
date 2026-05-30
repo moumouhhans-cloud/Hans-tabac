@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Boutique Hans Tabac</title>
+    <style>
+        body { background: #111214; color: #f0f0f0; font-family: sans-serif; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
+        .card { background: #1e2026; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <h1>Bienvenue chez Hans Tabac</h1>
+    <div class="grid" id="boutique"></div>
+    <script>
+        fetch('produits.json')
+            .then(r => r.json())
+            .then(data => {
+                const b = document.getElementById('boutique');
+                data.forEach(p => {
+                    b.innerHTML += `<div class="card"><h3>${p.nom}</h3><p>${p.prix}</p></div>`;
+                });
+            });
+    </script>
+</body>
+</html>
