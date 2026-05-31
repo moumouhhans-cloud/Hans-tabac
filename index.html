@@ -1,36 +1,785 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hans Tabac - Boutique</title>
-    <style>
-        body { background-color: #111214; color: #ffffff; font-family: sans-serif; margin: 0; padding: 20px; }
-        h1 { text-align: center; color: #FF3B3B; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
-        .card { background-color: #1e2026; padding: 20px; border-radius: 15px; border: 1px solid #2a2d35; text-align: center; }
-        .price { color: #FF8C00; font-weight: bold; font-size: 1.2em; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONE PUNCH HANS — Boutique Bureau Tabac</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red:#FF3B3B; --orange:#FF8C00; --yellow:#FFD600;
+  --green:#00C896; --blue:#0099FF; --purple:#9B5DE5;
+  --dark:#111214; --dark2:#1a1c20; --card:#1e2026;
+  --border:#2a2d35; --text:#f0f0f0; --muted:#7a7f8e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);overflow-x:hidden;}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 5%;height:68px;display:flex;align-items:center;justify-content:space-between;background:rgba(17,18,20,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.logo-punch{background:linear-gradient(135deg,var(--red),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse 2s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:0.6;}}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{background:linear-gradient(135deg,var(--red),var(--orange));color:white!important;padding:8px 20px;border-radius:50px;font-weight:600!important;}
+.nav-admin-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:50px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;letter-spacing:0.5px;}
+.nav-admin-btn:hover{border-color:var(--red);color:var(--red);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+
+/* ── ÉCRAN LOGIN ADMIN ── */
+#admin-login-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(10,10,12,0.97);backdrop-filter:blur(20px);align-items:center;justify-content:center;}
+#admin-login-overlay.active{display:flex;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:28px;padding:50px 44px;width:100%;max-width:420px;text-align:center;}
+.login-box .lock{font-size:52px;margin-bottom:20px;}
+.login-box h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;}
+.login-box p{color:var(--muted);font-size:14px;margin-bottom:32px;}
+.login-input{width:100%;background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:14px 18px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;margin-bottom:14px;text-align:center;letter-spacing:2px;}
+.login-input:focus{border-color:var(--red);}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;padding:14px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s;}
+.login-btn:hover{opacity:0.85;}
+.login-error{color:var(--red);font-size:13px;margin-top:10px;display:none;}
+.login-close{position:absolute;top:24px;right:28px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;}
+
+/* ── PANNEAU ADMIN ── */
+#admin-panel{display:none;position:fixed;inset:0;z-index:500;background:rgba(10,10,12,0.98);backdrop-filter:blur(20px);overflow-y:auto;}
+#admin-panel.active{display:block;}
+.admin-wrap{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;}
+.admin-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+.admin-title span{background:linear-gradient(135deg,var(--red),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.admin-close-btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 22px;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.admin-close-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* Tabs admin */
+.admin-tabs{display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap;}
+.admin-tab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:10px 22px;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.admin-tab.active,.admin-tab:hover{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border-color:transparent;}
+.admin-section{display:none;}
+.admin-section.active{display:block;}
+
+/* Champs */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.field-row.full{grid-template-columns:1fr;}
+.field-group{display:flex;flex-direction:column;gap:8px;}
+.field-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.field-input,.field-select,.field-textarea{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;width:100%;}
+.field-input:focus,.field-select:focus,.field-textarea:focus{border-color:var(--red);}
+.field-input::placeholder,.field-textarea::placeholder{color:var(--muted);}
+.field-textarea{resize:vertical;min-height:80px;}
+.field-select option{background:var(--dark2);}
+
+/* Cards produit admin */
+.admin-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;}
+.admin-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.admin-card-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px;}
+.delete-btn{background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.2);color:var(--red);padding:6px 14px;border-radius:50px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.delete-btn:hover{background:var(--red);color:#fff;}
+
+/* Boutons admin */
+.btn-save{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;padding:13px 32px;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s;margin-top:8px;}
+.btn-save:hover{opacity:0.85;}
+.btn-add{background:var(--card);border:2px dashed var(--border);color:var(--muted);padding:14px;border-radius:16px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;transition:all 0.2s;margin-top:8px;}
+.btn-add:hover{border-color:var(--red);color:var(--red);}
+.save-confirm{display:none;color:var(--green);font-size:13px;font-weight:600;margin-top:10px;}
+
+/* ── HERO ── */
+.hero{min-height:100vh;padding:68px 5% 0;display:flex;align-items:center;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;background:var(--dark);overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.18;animation:float 8s ease-in-out infinite;}
+.blob1{width:500px;height:500px;background:var(--red);top:-100px;right:-100px;}
+.blob2{width:400px;height:400px;background:var(--blue);bottom:0;left:-80px;animation-delay:3s;}
+.blob3{width:300px;height:300px;background:var(--purple);top:40%;left:40%;animation-delay:5s;}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-30px) scale(1.05);}66%{transform:translate(-20px,20px) scale(0.95);}}
+.hero-bg::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:50px 50px;}
+.hero-content{position:relative;z-index:2;max-width:700px;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(255,59,59,0.12);border:1px solid rgba(255,59,59,0.25);padding:6px 16px;border-radius:50px;font-size:12px;font-weight:500;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:28px;animation:fadeUp 0.7s ease forwards;opacity:0;}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--red);border-radius:50%;}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(48px,7vw,86px);line-height:0.95;letter-spacing:-2px;margin-bottom:24px;animation:fadeUp 0.7s 0.1s ease forwards;opacity:0;}
+.hero-title .line2{background:linear-gradient(135deg,var(--red) 0%,var(--orange) 50%,var(--yellow) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-desc{font-size:17px;color:var(--muted);line-height:1.7;max-width:500px;margin-bottom:40px;animation:fadeUp 0.7s 0.2s ease forwards;opacity:0;}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;animation:fadeUp 0.7s 0.3s ease forwards;opacity:0;}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--red),var(--orange));color:white;padding:14px 32px;border-radius:50px;font-size:15px;font-weight:600;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 8px 30px rgba(255,59,59,0.35);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,59,59,0.5);}
+.btn-secondary{display:inline-flex;align-items:center;gap:10px;background:transparent;color:var(--text);padding:14px 32px;border-radius:50px;font-size:15px;font-weight:600;text-decoration:none;border:1px solid var(--border);transition:border-color 0.2s,background 0.2s;}
+.btn-secondary:hover{border-color:var(--muted);background:rgba(255,255,255,0.04);}
+.hero-cards{position:absolute;right:5%;top:50%;transform:translateY(-50%);z-index:2;display:grid;grid-template-columns:repeat(2,140px);gap:14px;animation:fadeUp 0.8s 0.4s ease forwards;opacity:0;}
+.hero-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px 16px;text-align:center;transition:transform 0.25s,box-shadow 0.25s;}
+.hero-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,0.4);}
+.hero-card:nth-child(2),.hero-card:nth-child(4){margin-top:28px;}
+.hero-card .icon{font-size:36px;margin-bottom:10px;}
+.hero-card .card-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.hero-card.c1{border-top:2px solid var(--red);}
+.hero-card.c2{border-top:2px solid var(--blue);}
+.hero-card.c3{border-top:2px solid var(--green);}
+.hero-card.c4{border-top:2px solid var(--purple);}
+.hero-card.c5{border-top:2px solid var(--orange);}
+.hero-card.c6{border-top:2px solid var(--yellow);}
+
+/* Stats */
+.stats-bar{position:relative;z-index:2;background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:28px 5%;display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px;}
+.stat-item{text-align:center;}
+.stat-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--red),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.stat-lbl{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px;}
+
+/* Sections */
+section{padding:90px 5%;}
+.section-tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:14px;}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(32px,4vw,48px);font-weight:800;letter-spacing:-1px;margin-bottom:16px;}
+.section-sub{color:var(--muted);font-size:16px;max-width:560px;line-height:1.7;margin-bottom:56px;}
+
+/* Catégories */
+#categories{background:var(--dark2);}
+.categories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;}
+.cat-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 24px;cursor:pointer;transition:transform 0.25s,box-shadow 0.25s,border-color 0.25s;position:relative;overflow:hidden;}
+.cat-card:hover{transform:translateY(-6px);}
+.cat-icon{font-size:44px;margin-bottom:18px;display:block;}
+.cat-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:8px;}
+.cat-desc{font-size:13px;color:var(--muted);line-height:1.5;}
+
+/* Produits */
+#produits{background:var(--dark2);}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px;}
+.product-card{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:transform 0.25s,box-shadow 0.25s;}
+.product-card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,0.5);}
+.product-img{height:180px;display:flex;align-items:center;justify-content:center;font-size:72px;position:relative;overflow:hidden;}
+.product-img.bg1{background:linear-gradient(135deg,#1a0a0a,#2d1010);}
+.product-img.bg2{background:linear-gradient(135deg,#0a1020,#101828);}
+.product-img.bg3{background:linear-gradient(135deg,#0a1a14,#0e2a1e);}
+.product-img.bg4{background:linear-gradient(135deg,#1a1420,#251c30);}
+.product-img.bg5{background:linear-gradient(135deg,#1a1200,#2a1e00);}
+.product-img.bg6{background:linear-gradient(135deg,#1a0a1a,#280e28);}
+.product-badge{position:absolute;top:14px;left:14px;padding:4px 12px;border-radius:50px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.badge-new{background:var(--green);color:#000;}
+.badge-hot{background:var(--red);color:#fff;}
+.badge-promo{background:var(--orange);color:#000;}
+.product-info{padding:20px;}
+.product-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px;}
+.product-cat{font-size:12px;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;}
+.product-footer{display:flex;align-items:center;justify-content:space-between;}
+.product-price{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;background:linear-gradient(135deg,var(--red),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* Pourquoi */
+#pourquoi{background:var(--dark);}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px;}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;}
+.feature-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:20px;}
+.fi1{background:rgba(255,59,59,0.12);}
+.fi2{background:rgba(0,153,255,0.12);}
+.fi3{background:rgba(0,200,150,0.12);}
+.fi4{background:rgba(155,93,229,0.12);}
+.feature-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:10px;}
+.feature-desc{font-size:14px;color:var(--muted);line-height:1.6;}
+
+/* Contact */
+#contact{background:var(--dark2);}
+.contact-wrapper{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.contact-item{display:flex;gap:18px;align-items:flex-start;margin-bottom:28px;}
+.contact-icon{width:48px;height:48px;border-radius:14px;background:rgba(255,59,59,0.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.contact-label{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.contact-value{font-size:15px;font-weight:500;}
+.hours-grid{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;}
+.hours-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:20px;}
+.hours-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.hours-row:last-child{border-bottom:none;}
+.hours-day{color:var(--muted);}
+.hours-time.open{color:var(--green);font-weight:500;}
+.hours-time.closed{color:var(--red);font-weight:500;}
+
+/* CTA */
+.cta-banner{margin:0 5% 90px;background:linear-gradient(135deg,var(--red) 0%,var(--orange) 50%,var(--yellow) 100%);border-radius:28px;padding:60px 50px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:30px;position:relative;overflow:hidden;}
+.cta-banner::before{content:'👊';position:absolute;right:40px;top:50%;transform:translateY(-50%);font-size:140px;opacity:0.15;pointer-events:none;}
+.cta-pre{font-size:13px;letter-spacing:3px;text-transform:uppercase;opacity:0.8;margin-bottom:10px;}
+.cta-title{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:#000;letter-spacing:-1px;}
+.cta-btn{background:#000;color:white;padding:16px 36px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none;transition:transform 0.2s;position:relative;z-index:1;}
+.cta-btn:hover{transform:translateY(-2px);}
+
+/* Ticker */
+.ticker-section{background:var(--red);padding:14px 0;overflow:hidden;}
+.ticker-track{display:flex;white-space:nowrap;animation:ticker 20s linear infinite;}
+.ticker-item{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.8);padding:0 40px;}
+.ticker-item .sep{color:rgba(255,255,255,0.4);margin:0 8px;}
+@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* Footer */
+footer{background:#0a0b0d;border-top:1px solid var(--border);padding:50px 5% 30px;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:50px;margin-bottom:40px;}
+.footer-desc{font-size:14px;color:var(--muted);line-height:1.7;max-width:300px;margin-top:14px;}
+.footer-col h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:10px;}
+.footer-col a{text-decoration:none;color:var(--muted);font-size:14px;transition:color 0.2s;}
+.footer-col a:hover{color:var(--text);}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.footer-copy{font-size:13px;color:var(--muted);}
+.footer-social{display:flex;gap:14px;}
+.social-btn{width:38px;height:38px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;text-decoration:none;transition:all 0.2s;}
+.social-btn:hover{background:var(--red);border-color:var(--red);}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* Responsive */
+@media(max-width:900px){.hero-cards{display:none;}.contact-wrapper{grid-template-columns:1fr;}.footer-top{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.nav-links{display:none;}.footer-top{grid-template-columns:1fr;}.cta-banner{padding:40px 28px;}.cta-title{font-size:26px;}.field-row{grid-template-columns:1fr;}}
+</style>
 </head>
 <body>
-    <h1>Hans Tabac</h1>
-    <div class="grid" id="boutique"></div>
 
-    <script>
-        // On charge les produits depuis votre fichier produits.json
-        fetch('produits.json')
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('boutique');
-                data.forEach(p => {
-                    container.innerHTML += `
-                        <div class="card">
-                            <h3>${p.nom}</h3>
-                            <p class="price">${p.prix}</p>
-                        </div>`;
-                });
-            })
-            .catch(err => console.log('Erreur de chargement des produits', err));
-    </script>
+<!-- LOGIN ADMIN -->
+<div id="admin-login-overlay">
+  <button class="login-close" onclick="closeLogin()">✕</button>
+  <div class="login-box">
+    <div class="lock">🔐</div>
+    <h2>Accès Admin</h2>
+    <p>Entrez votre mot de passe pour accéder au panneau d'administration</p>
+    <input class="login-input" id="login-input" type="password" placeholder="••••••••••••••••" onkeydown="if(event.key==='Enter')checkLogin()">
+    <button class="login-btn" onclick="checkLogin()">Accéder →</button>
+    <div class="login-error" id="login-error">❌ Mot de passe incorrect. Réessayez.</div>
+  </div>
+</div>
+
+<!-- PANNEAU ADMIN -->
+<div id="admin-panel">
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <div class="admin-title">⚙️ Admin <span>ONE PUNCH HANS</span></div>
+      <button class="admin-close-btn" onclick="closeAdmin()">✕ Fermer</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="showTab('tab-contact')">📍 Contact & Infos</button>
+      <button class="admin-tab" onclick="showTab('tab-produits')">📦 Produits</button>
+      <button class="admin-tab" onclick="showTab('tab-horaires')">🕐 Horaires</button>
+    </div>
+
+    <!-- TAB CONTACT -->
+    <div id="tab-contact" class="admin-section active">
+      <div class="admin-card">
+        <div class="admin-card-header"><div class="admin-card-title">📍 Informations de la boutique</div></div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Adresse</label><input class="field-input" id="a-address" placeholder="Ex: Azazga, Tizi Bouchene"></div>
+          <div class="field-group"><label class="field-label">Téléphone</label><input class="field-input" id="a-phone" placeholder="Ex: 098 976 578"></div>
+        </div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Email</label><input class="field-input" id="a-email" placeholder="Ex: contact@onepunch.fr"></div>
+          <div class="field-group"><label class="field-label">Instagram (sans @)</label><input class="field-input" id="a-instagram" placeholder="Ex: one_punch_tabac"></div>
+        </div>
+        <div class="field-row full">
+          <div class="field-group"><label class="field-label">🗺️ Lien Google Maps (copiez l'URL depuis maps.google.com)</label><input class="field-input" id="a-maps" placeholder="https://maps.google.com/?q=Azazga"></div>
+        </div>
+        <button class="btn-save" onclick="saveContact()">✅ Enregistrer les infos</button>
+        <div class="save-confirm" id="confirm-contact">✓ Informations mises à jour !</div>
+      </div>
+    </div>
+
+    <!-- TAB PRODUITS -->
+    <div id="tab-produits" class="admin-section">
+      <div id="products-admin-list"></div>
+      <button class="btn-add" onclick="addProductForm()">+ Ajouter un nouveau produit</button>
+    </div>
+
+    <!-- TAB HORAIRES -->
+    <div id="tab-horaires" class="admin-section">
+      <div class="admin-card">
+        <div class="admin-card-header"><div class="admin-card-title">🕐 Horaires d'ouverture</div></div>
+        <div id="hours-editor"></div>
+        <button class="btn-save" onclick="saveHours()">✅ Enregistrer les horaires</button>
+        <div class="save-confirm" id="confirm-hours">✓ Horaires mis à jour !</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <div class="logo-dot"></div>
+    <span class="logo-punch">ONE PUNCH</span>&nbsp;HANS
+  </div>
+  <ul class="nav-links">
+    <li><a href="#categories">Catégories</a></li>
+    <li><a href="#produits">Produits</a></li>
+    <li><a href="#pourquoi">À propos</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-admin-btn" onclick="openLogin()">⚙️ Admin</button>
+    <a href="#contact" class="nav-cta" style="text-decoration:none;font-size:14px;padding:8px 18px;border-radius:50px;">📍 Nous trouver</a>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div style="margin-top:68px;" class="ticker-section">
+  <div class="ticker-track">
+    <span class="ticker-item">Accessoires Téléphone <span class="sep">✦</span></span>
+    <span class="ticker-item">Bijoux & Montres <span class="sep">✦</span></span>
+    <span class="ticker-item">Articles Scolaires <span class="sep">✦</span></span>
+    <span class="ticker-item">Parfums <span class="sep">✦</span></span>
+    <span class="ticker-item">Cadeaux <span class="sep">✦</span></span>
+    <span class="ticker-item">Porte-Clés <span class="sep">✦</span></span>
+    <span class="ticker-item">Bureau & Tabac <span class="sep">✦</span></span>
+    <span class="ticker-item">Accessoires Téléphone <span class="sep">✦</span></span>
+    <span class="ticker-item">Bijoux & Montres <span class="sep">✦</span></span>
+    <span class="ticker-item">Articles Scolaires <span class="sep">✦</span></span>
+    <span class="ticker-item">Parfums <span class="sep">✦</span></span>
+    <span class="ticker-item">Cadeaux <span class="sep">✦</span></span>
+    <span class="ticker-item">Porte-Clés <span class="sep">✦</span></span>
+    <span class="ticker-item">Bureau & Tabac <span class="sep">✦</span></span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag">Bureau · Tabac · Boutique</div>
+    <h1 class="hero-title">Tout ce<br><span class="line2">dont tu as</span><br>besoin.</h1>
+    <p class="hero-desc">Mode, tech, bijoux, parfums, papeterie — <strong>One Punch Hans</strong> rassemble tout ce qui rend ta journée unique en un seul endroit.</p>
+    <div class="hero-actions">
+      <a href="#categories" class="btn-primary">Découvrir nos produits ↓</a>
+      <a href="#contact" class="btn-secondary">📍 Nous trouver</a>
+    </div>
+  </div>
+  <div class="hero-cards">
+    <div class="hero-card c1"><div class="icon">📱</div><div class="card-label">Téléphone</div></div>
+    <div class="hero-card c2"><div class="icon">⌚</div><div class="card-label">Montres</div></div>
+    <div class="hero-card c3"><div class="icon">💐</div><div class="card-label">Parfums</div></div>
+    <div class="hero-card c4"><div class="icon">💍</div><div class="card-label">Bijoux</div></div>
+    <div class="hero-card c5"><div class="icon">🎁</div><div class="card-label">Cadeaux</div></div>
+    <div class="hero-card c6"><div class="icon">✏️</div><div class="card-label">Scolaire</div></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item reveal"><div class="stat-num">500+</div><div class="stat-lbl">Produits en stock</div></div>
+  <div class="stat-item reveal"><div class="stat-num">8</div><div class="stat-lbl">Catégories</div></div>
+  <div class="stat-item reveal"><div class="stat-num">7j/7</div><div class="stat-lbl">Ouvert toute la semaine</div></div>
+  <div class="stat-item reveal"><div class="stat-num">100%</div><div class="stat-lbl">Clients satisfaits</div></div>
+</div>
+
+<!-- CATÉGORIES -->
+<section id="categories">
+  <div class="section-tag">Nos univers</div>
+  <h2 class="section-title reveal">Tout ce que<br>nous proposons</h2>
+  <p class="section-sub reveal">De la papeterie aux parfums, en passant par les bijoux et les accessoires high-tech.</p>
+  <div class="categories-grid">
+    <div class="cat-card reveal"><span class="cat-icon">📱</span><div class="cat-name">Accessoires Téléphone</div><div class="cat-desc">Coques, chargeurs, câbles, écouteurs, supports et protections écran.</div></div>
+    <div class="cat-card reveal"><span class="cat-icon">✏️</span><div class="cat-name">Articles Scolaires</div><div class="cat-desc">Cahiers, stylos, trousses, classeurs et tout le matériel scolaire.</div></div>
+    <div class="cat-card reveal"><span class="cat-icon">🎁</span><div class="cat-name">Cadeaux</div><div class="cat-desc">Des surprises pour tous les goûts et toutes les occasions.</div></div>
+    <div class="cat-card reveal"><span class="cat-icon">🗝️</span><div class="cat-name">Porte-Clés</div><div class="cat-desc">Porte-clés tendance, personnalisables, pour tous les styles.</div></div>
+    <div class="cat-card reveal"><span class="cat-icon">🌸</span><div class="cat-name">Parfums</div><div class="cat-desc">Parfums pour femme et homme — fraîcheurs, orientaux, floraux.</div></div>
+    <div class="cat-card reveal"><span class="cat-icon">⌚</span><div class="cat-name">Montres</div><div class="cat-desc">Montres tendance, sport et élégance pour tous les jours.</div></div>
+    <div class="cat-card reveal"><span class="cat-icon">💍</span><div class="cat-name">Bagues & Bracelets</div><div class="cat-desc">Bijoux fantaisie — bagues, bracelets, colliers pour votre look.</div></div>
+    <div class="cat-card reveal"><span class="cat-icon">📰</span><div class="cat-name">Bureau & Tabac</div><div class="cat-desc">Presse, timbres, recharges et tous les services du bureau de tabac.</div></div>
+  </div>
+</section>
+
+<!-- PRODUITS -->
+<section id="produits">
+  <div class="section-tag">Sélection</div>
+  <h2 class="section-title reveal">Produits vedettes</h2>
+  <p class="section-sub reveal">Nos articles les plus populaires — qualité garantie, prix accessibles.</p>
+  <div class="products-grid" id="products-grid"></div>
+</section>
+
+<!-- POURQUOI -->
+<section id="pourquoi">
+  <div class="section-tag">Nos valeurs</div>
+  <h2 class="section-title reveal">Pourquoi choisir<br>One Punch Hans ?</h2>
+  <p class="section-sub reveal">Une boutique de quartier avec l'âme d'une vraie sélection — qualité, accessibilité et service humain.</p>
+  <div class="features-grid">
+    <div class="feature-card reveal"><div class="feature-icon fi1">✅</div><div class="feature-title">Produits Sélectionnés</div><div class="feature-desc">Chaque article est choisi avec soin pour vous offrir qualité et style au meilleur prix.</div></div>
+    <div class="feature-card reveal"><div class="feature-icon fi2">💰</div><div class="feature-title">Prix Accessibles</div><div class="feature-desc">Des tarifs pour tous les budgets — de quelques dinars à des articles plus premium.</div></div>
+    <div class="feature-card reveal"><div class="feature-icon fi3">📍</div><div class="feature-title">À Votre Porte</div><div class="feature-desc">Boutique de proximité à Azazga, ouverte 7 jours sur 7 pour votre confort.</div></div>
+    <div class="feature-card reveal"><div class="feature-icon fi4">🤝</div><div class="feature-title">Service Personnalisé</div><div class="feature-desc">Une équipe à l'écoute pour vous conseiller et trouver ce qu'il vous faut.</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-banner reveal">
+  <div class="cta-text">
+    <div class="cta-pre">🎁 Idées cadeaux</div>
+    <div class="cta-title">Un cadeau unique<br>pour chaque occasion</div>
+  </div>
+  <a href="#contact" class="cta-btn">Venez nous rendre visite →</a>
+</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-tag">Nous trouver</div>
+  <h2 class="section-title reveal">Venez nous<br>rendre visite</h2>
+  <div class="contact-wrapper">
+    <div class="contact-info reveal">
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div>
+          <div class="contact-label">Adresse</div>
+          <div class="contact-value" id="d-address">Azazga, Tizi Bouchene</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📞</div>
+        <div>
+          <div class="contact-label">Téléphone</div>
+          <div class="contact-value"><a id="d-phone" href="tel:098976578" style="color:inherit;text-decoration:none;">098 976 578</a></div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📧</div>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-value" id="d-email">onepunctabac@gmail.com</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📸</div>
+        <div>
+          <div class="contact-label">Instagram</div>
+          <div class="contact-value"><a id="d-instagram" href="https://instagram.com/one_punch_tabac" target="_blank" style="color:var(--red);text-decoration:none;font-weight:600;">@one_punch_tabac</a></div>
+        </div>
+      </div>
+      <div style="margin-top:16px;border-radius:16px;overflow:hidden;border:1px solid var(--border);">
+        <div id="map-zone" style="background:var(--card);height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+          <span style="font-size:32px;">🗺️</span>
+          <a id="d-maps" href="https://maps.google.com/?q=Azazga+Algerie" target="_blank" style="background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;padding:10px 22px;border-radius:50px;font-size:13px;font-weight:600;text-decoration:none;">📍 Ouvrir dans Google Maps</a>
+        </div>
+      </div>
+    </div>
+    <div class="hours-grid reveal">
+      <div class="hours-title">🕐 Horaires d'ouverture</div>
+      <div id="hours-display"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="logo"><div class="logo-dot"></div><span class="logo-punch">ONE PUNCH</span>&nbsp;HANS</div>
+      <div class="footer-desc">Bureau tabac nouvelle génération — mode, tech, bijoux, parfums et bien plus. Tout ce dont vous avez besoin, au même endroit à Azazga.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Catégories</h4>
+      <ul>
+        <li><a href="#categories">Accessoires Téléphone</a></li>
+        <li><a href="#categories">Bijoux & Montres</a></li>
+        <li><a href="#categories">Parfums</a></li>
+        <li><a href="#categories">Articles Scolaires</a></li>
+        <li><a href="#categories">Cadeaux</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Boutique</h4>
+      <ul>
+        <li><a href="#pourquoi">À propos</a></li>
+        <li><a href="#produits">Produits vedettes</a></li>
+        <li><a href="#contact">Horaires</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 ONE PUNCH HANS — Bureau Tabac. Tous droits réservés.</div>
+    <div class="footer-social">
+      <a class="social-btn" href="#">📘</a>
+      <a class="social-btn" id="ig-footer" href="https://instagram.com/one_punch_tabac" target="_blank">📸</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ════════════════════════════════════════
+// DONNÉES (sauvegardées dans localStorage)
+// ════════════════════════════════════════
+const PASS = 'Tabac one punch';
+
+var data = {
+  contact: {
+    address: 'Azazga, Tizi Bouchene',
+    phone: '098 976 578',
+    email: 'onepunctabac@gmail.com',
+    instagram: 'one_punch_tabac',
+    maps: 'https://maps.google.com/?q=Azazga+Algerie'
+  },
+  products: [
+    { id:1, name:'Écouteurs Bluetooth', cat:'Accessoires Téléphone', price:'À partir de 900 DA', icon:'🎧', badge:'hot', bg:'bg1' },
+    { id:2, name:'Bracelet Fantaisie', cat:'Bijoux', price:'À partir de 450 DA', icon:'💍', badge:'new', bg:'bg4' },
+    { id:3, name:'Eau de Toilette', cat:'Parfums', price:'À partir de 1200 DA', icon:'🌸', badge:'promo', bg:'bg5' },
+    { id:4, name:'Montre Tendance', cat:'Montres', price:'À partir de 1900 DA', icon:'⌚', badge:'new', bg:'bg2' },
+    { id:5, name:'Coffret Cadeau', cat:'Cadeaux', price:'À partir de 1400 DA', icon:'🎁', badge:'', bg:'bg3' },
+    { id:6, name:'Coque Personnalisée', cat:'Accessoires Téléphone', price:'À partir de 550 DA', icon:'📱', badge:'hot', bg:'bg6' }
+  ],
+  hours: [
+    { day:'Lundi', time:'08h00 – 20h00', open:true },
+    { day:'Mardi', time:'08h00 – 20h00', open:true },
+    { day:'Mercredi', time:'08h00 – 20h00', open:true },
+    { day:'Jeudi', time:'08h00 – 20h00', open:true },
+    { day:'Vendredi', time:'08h00 – 20h00', open:true },
+    { day:'Samedi', time:'09h00 – 19h00', open:true },
+    { day:'Dimanche', time:'10h00 – 14h00', open:true }
+  ]
+};
+
+// Charger depuis localStorage
+try {
+  var saved = localStorage.getItem('op_data');
+  if (saved) data = JSON.parse(saved);
+} catch(e) {}
+
+function saveData() {
+  try { localStorage.setItem('op_data', JSON.stringify(data)); } catch(e) {}
+}
+
+// ════════════════════════════════════════
+// LOGIN
+// ════════════════════════════════════════
+function openLogin() {
+  document.getElementById('admin-login-overlay').classList.add('active');
+  document.getElementById('login-input').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  setTimeout(function(){ document.getElementById('login-input').focus(); }, 200);
+}
+
+function closeLogin() {
+  document.getElementById('admin-login-overlay').classList.remove('active');
+}
+
+function checkLogin() {
+  var val = document.getElementById('login-input').value;
+  if (val === PASS) {
+    closeLogin();
+    openAdmin();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-input').value = '';
+    document.getElementById('login-input').focus();
+  }
+}
+
+// ════════════════════════════════════════
+// ADMIN
+// ════════════════════════════════════════
+function openAdmin() {
+  document.getElementById('admin-panel').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  loadAdminForms();
+}
+
+function closeAdmin() {
+  document.getElementById('admin-panel').classList.remove('active');
+  document.body.style.overflow = '';
+  renderSite();
+}
+
+function showTab(id) {
+  document.querySelectorAll('.admin-section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.admin-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function loadAdminForms() {
+  // Contact
+  document.getElementById('a-address').value = data.contact.address;
+  document.getElementById('a-phone').value = data.contact.phone;
+  document.getElementById('a-email').value = data.contact.email;
+  document.getElementById('a-instagram').value = data.contact.instagram;
+  document.getElementById('a-maps').value = data.contact.maps;
+  // Produits
+  renderProductsAdmin();
+  // Horaires
+  renderHoursAdmin();
+}
+
+// ── CONTACT ──
+function saveContact() {
+  data.contact.address = document.getElementById('a-address').value.trim() || data.contact.address;
+  data.contact.phone = document.getElementById('a-phone').value.trim() || data.contact.phone;
+  data.contact.email = document.getElementById('a-email').value.trim() || data.contact.email;
+  data.contact.instagram = document.getElementById('a-instagram').value.trim().replace('@','') || data.contact.instagram;
+  data.contact.maps = document.getElementById('a-maps').value.trim() || data.contact.maps;
+  saveData();
+  var c = document.getElementById('confirm-contact');
+  c.style.display = 'block';
+  setTimeout(function(){ c.style.display = 'none'; }, 2000);
+}
+
+// ── PRODUITS ──
+var bgs = ['bg1','bg2','bg3','bg4','bg5','bg6'];
+var emojis = ['📱','🎧','💍','⌚','🌸','🎁','👜','✏️','🗝️','📰','💄','👒'];
+
+function renderProductsAdmin() {
+  var html = '';
+  data.products.forEach(function(p, i) {
+    html += '<div class="admin-card" id="pc-'+p.id+'">';
+    html += '<div class="admin-card-header">';
+    html += '<div class="admin-card-title">'+p.icon+' Produit '+(i+1)+'</div>';
+    html += '<button class="delete-btn" onclick="deleteProduct('+p.id+')">🗑 Supprimer</button>';
+    html += '</div>';
+    html += '<div class="field-row">';
+    html += '<div class="field-group"><label class="field-label">Nom du produit</label><input class="field-input" id="pn-'+p.id+'" value="'+p.name+'"></div>';
+    html += '<div class="field-group"><label class="field-label">Catégorie</label><select class="field-select" id="pc2-'+p.id+'">';
+    ['Accessoires Téléphone','Bijoux','Parfums','Montres','Cadeaux','Articles Scolaires','Porte-Clés','Bureau & Tabac'].forEach(function(cat){
+      html += '<option'+(p.cat===cat?' selected':'')+'>'+cat+'</option>';
+    });
+    html += '</select></div></div>';
+    html += '<div class="field-row">';
+    html += '<div class="field-group"><label class="field-label">Prix</label><input class="field-input" id="pp-'+p.id+'" value="'+p.price+'"></div>';
+    html += '<div class="field-group"><label class="field-label">Badge</label><select class="field-select" id="pb-'+p.id+'">';
+    [['','Aucun'],['hot','🔥 HOT'],['new','✨ NEW'],['promo','🏷 PROMO']].forEach(function(b){
+      html += '<option value="'+b[0]+'"'+(p.badge===b[0]?' selected':'')+'>'+b[1]+'</option>';
+    });
+    html += '</select></div></div>';
+    html += '<div class="field-row">';
+    html += '<div class="field-group"><label class="field-label">Emoji / Icône</label><select class="field-select" id="pe-'+p.id+'">';
+    emojis.forEach(function(e){ html += '<option'+(p.icon===e?' selected':'')+'>'+e+'</option>'; });
+    html += '</select></div>';
+    html += '<div class="field-group"><label class="field-label">Couleur de fond</label><select class="field-select" id="pbg-'+p.id+'">';
+    bgs.forEach(function(b){ html += '<option'+(p.bg===b?' selected':'')+'>'+b+'</option>'; });
+    html += '</select></div></div>';
+    html += '<button class="btn-save" onclick="saveProduct('+p.id+')">💾 Sauvegarder ce produit</button>';
+    html += '<div class="save-confirm" id="confirm-p'+p.id+'">✓ Produit mis à jour !</div>';
+    html += '</div>';
+  });
+  document.getElementById('products-admin-list').innerHTML = html;
+}
+
+function saveProduct(id) {
+  var p = data.products.find(function(x){ return x.id===id; });
+  if (!p) return;
+  p.name = document.getElementById('pn-'+id).value.trim();
+  p.cat = document.getElementById('pc2-'+id).value;
+  p.price = document.getElementById('pp-'+id).value.trim();
+  p.badge = document.getElementById('pb-'+id).value;
+  p.icon = document.getElementById('pe-'+id).value;
+  p.bg = document.getElementById('pbg-'+id).value;
+  saveData();
+  var c = document.getElementById('confirm-p'+id);
+  c.style.display = 'block';
+  setTimeout(function(){ c.style.display='none'; }, 2000);
+}
+
+function deleteProduct(id) {
+  if (!confirm('Supprimer ce produit ?')) return;
+  data.products = data.products.filter(function(p){ return p.id !== id; });
+  saveData();
+  renderProductsAdmin();
+}
+
+function addProductForm() {
+  var newId = Date.now();
+  data.products.push({ id:newId, name:'Nouveau produit', cat:'Cadeaux', price:'À partir de 500 DA', icon:'🎁', badge:'new', bg:'bg3' });
+  saveData();
+  renderProductsAdmin();
+  document.getElementById('pc-'+newId).scrollIntoView({ behavior:'smooth' });
+}
+
+// ── HORAIRES ──
+function renderHoursAdmin() {
+  var html = '';
+  data.hours.forEach(function(h, i) {
+    html += '<div class="field-row" style="align-items:center;margin-bottom:12px;">';
+    html += '<div class="field-group"><label class="field-label">'+h.day+'</label><input class="field-input" id="ht-'+i+'" value="'+h.time+'"></div>';
+    html += '<div class="field-group" style="flex-direction:row;align-items:center;gap:10px;padding-top:20px;">';
+    html += '<label style="font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;cursor:pointer;">';
+    html += '<input type="checkbox" id="ho-'+i+'"'+(h.open?' checked':'')+' style="accent-color:var(--green);width:16px;height:16px;"> Ouvert</label>';
+    html += '</div></div>';
+  });
+  document.getElementById('hours-editor').innerHTML = html;
+}
+
+function saveHours() {
+  data.hours.forEach(function(h, i) {
+    h.time = document.getElementById('ht-'+i).value.trim();
+    h.open = document.getElementById('ho-'+i).checked;
+  });
+  saveData();
+  var c = document.getElementById('confirm-hours');
+  c.style.display = 'block';
+  setTimeout(function(){ c.style.display='none'; }, 2000);
+}
+
+// ════════════════════════════════════════
+// RENDU DU SITE
+// ════════════════════════════════════════
+function renderSite() {
+  // Contact
+  document.getElementById('d-address').textContent = data.contact.address;
+  document.getElementById('d-phone').textContent = data.contact.phone;
+  document.getElementById('d-phone').href = 'tel:'+data.contact.phone.replace(/\s/g,'');
+  document.getElementById('d-email').textContent = data.contact.email;
+  document.getElementById('d-instagram').textContent = '@'+data.contact.instagram;
+  document.getElementById('d-instagram').href = 'https://instagram.com/'+data.contact.instagram;
+  document.getElementById('ig-footer').href = 'https://instagram.com/'+data.contact.instagram;
+  document.getElementById('d-maps').href = data.contact.maps;
+
+  // Produits
+  var pgrid = document.getElementById('products-grid');
+  pgrid.innerHTML = '';
+  data.products.forEach(function(p) {
+    var badgeHtml = p.badge ? '<span class="product-badge badge-'+p.badge+'">'+(p.badge==='hot'?'HOT':p.badge==='new'?'NEW':'PROMO')+'</span>' : '';
+    pgrid.innerHTML +=
+      '<div class="product-card reveal">'+
+      '<div class="product-img '+p.bg+'">'+badgeHtml+p.icon+'</div>'+
+      '<div class="product-info">'+
+      '<div class="product-name">'+p.name+'</div>'+
+      '<div class="product-cat">'+p.cat+'</div>'+
+      '<div class="product-footer"><div class="product-price">'+p.price+'</div></div>'+
+      '</div></div>';
+  });
+
+  // Horaires
+  var hd = document.getElementById('hours-display');
+  hd.innerHTML = '';
+  data.hours.forEach(function(h) {
+    hd.innerHTML += '<div class="hours-row"><span class="hours-day">'+h.day+'</span><span class="hours-time '+(h.open?'open':'closed')+'">'+(h.open?h.time:'Fermé')+'</span></div>';
+  });
+
+  // Révéler
+  setTimeout(function(){
+    document.querySelectorAll('.reveal').forEach(function(el){ observer.observe(el); });
+  }, 100);
+}
+
+// ════════════════════════════════════════
+// SCROLL REVEAL
+// ════════════════════════════════════════
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry, i) {
+    if (entry.isIntersecting) {
+      setTimeout(function(){ entry.target.classList.add('visible'); }, i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(function(el){ observer.observe(el); });
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    var href = a.getAttribute('href');
+    if (href === '#') return;
+    e.preventDefault();
+    var target = document.querySelector(href);
+    if (target) target.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+});
+
+// Init
+renderSite();
+</script>
 </body>
 </html>
